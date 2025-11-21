@@ -22,7 +22,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     <div className="chat-input-bar">
       <textarea
         className="chat-input-textarea"
-        rows={2}
+        rows={5}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}

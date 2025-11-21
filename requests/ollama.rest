@@ -1,0 +1,63 @@
+# API 参考 https://ollama.apidog.io/
+
+GET /api/tags HTTP/1.1
+Host: localhost:11434
+
+###
+
+POST /api/chat HTTP/1.1
+Host: localhost:11434
+Content-Type: application/json
+
+{
+  "model": "deepseek-r1:1.5b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "你好"
+    }
+  ],
+  "stream": false
+}
+
+###
+
+POST /api/chat HTTP/1.1
+Host: localhost:11434
+Content-Type: application/json
+
+{
+  "model": "deepseek-r1:1.5b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "你好"
+    }
+  ],
+  "stream": true
+}
+
+###
+
+POST /api/chat HTTP/1.1
+Host: localhost:11434
+Content-Type: application/json
+
+{
+  "model": "deepseek-r1:1.5b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "你好，我是小明"
+    },
+    {
+      "role": "assistant",
+      "content": "小明你好！很高兴认识你。"
+    },
+    {      
+      "role": "user",
+      "content": "你还记得我是谁吗？"
+    }
+  ],
+  "stream": false
+}
