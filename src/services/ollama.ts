@@ -19,8 +19,8 @@ export async function checkConnection(): Promise<boolean> {
   try {
     const res = await fetch(`${BASE_URL}/api/tags`)
     return res.ok
-  } catch (error) {
-    console.log(error)
+  } catch (e) {
+    console.log(e)
     return false
   }
 }

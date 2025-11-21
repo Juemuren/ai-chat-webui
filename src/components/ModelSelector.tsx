@@ -15,12 +15,15 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   loading,
 }) => (
   <div className="model-selector-row">
-    <label className="model-selector-label">选择模型</label>
+    <label className="model-selector-label" htmlFor="model-select">
+      选择模型
+    </label>
     <select
       value={model}
       onChange={(e) => onChange(e.target.value)}
       disabled={loading || models.length === 0}
       className="modern-select"
+      id="model-select"
     >
       {models.map((m) => (
         <option key={m.name} value={m.name} className="model-selector-option">

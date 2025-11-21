@@ -78,8 +78,9 @@ export function useChat() {
         }
         // 回复结束，标记 isFinished
         setMessages((msgs) => updateAIMsg(msgs, aiMsgId, current, true))
-      } catch {
+      } catch (e) {
         // 回复出错，标记 isError
+        console.log(e)
         setMessages((msgs) =>
           updateAIMsg(
             msgs,
