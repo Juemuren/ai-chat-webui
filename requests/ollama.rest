@@ -5,6 +5,8 @@ Host: localhost:11434
 
 ###
 
+# 非流式传输
+
 POST /api/chat HTTP/1.1
 Host: localhost:11434
 Content-Type: application/json
@@ -21,6 +23,8 @@ Content-Type: application/json
 }
 
 ###
+
+# 流式传输
 
 POST /api/chat HTTP/1.1
 Host: localhost:11434

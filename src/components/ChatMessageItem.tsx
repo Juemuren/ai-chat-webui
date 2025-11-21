@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactMarkdown from 'react-markdown'
 import type { ChatMessage } from '../types/chat'
 import './ChatMessageItem.css'
 
@@ -32,7 +33,11 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
       <div>
         <div className="chat-name">{info.name}</div>
         <div className={`chat-bubble ${info.bubbleClass}`}>
-          {message.content}
+          {message.role === 'assistant' ? (
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          ) : (
+            message.content
+          )}
         </div>
         <div className="chat-time">
           {new Date(message.timestamp).toLocaleTimeString()}

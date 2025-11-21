@@ -6,7 +6,6 @@ export interface OllamaMessage {
 export interface OllamaRequest {
   model: string
   messages: OllamaMessage[]
-  stream: boolean
 }
 
 export interface OllamaResponse {

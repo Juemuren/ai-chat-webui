@@ -1,7 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { ChatMessage } from '../types/chat'
-import { sendChat, fetchModels } from '../services/ollama'
-import { toOllamaMessages, fromOllamaMessage } from '../services/chatAdapter'
+import {
+  fetchModels,
+  // sendChat,
+  sendChatStream,
+} from '../services/ollama'
+import {
+  toOllamaMessages,
+  // fromOllamaMessage
+} from '../services/chatAdapter'
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -26,6 +33,7 @@ export function useChat() {
       .catch(() => setModels([]))
   }, [])
 
+  // 打字机流式效果
   const send = useCallback(async () => {
     const text = input.trim()
     if (!text || loading || !model) return
@@ -42,15 +50,30 @@ export function useChat() {
       const payload = {
         model,
         messages: toOllamaMessages([...messages, userMsg]),
-        stream: false,
       }
-      const res = await sendChat(payload)
-      const aiMsg = fromOllamaMessage(
-        res.message,
-        Date.now() + Math.random().toString(36).slice(2, 8),
-        Date.now(),
-      )
-      setMessages((msgs) => [...msgs, aiMsg])
+      const aiMsgId = Date.now() + Math.random().toString(36).slice(2, 8)
+      let current = ''
+      for await (const chunk of sendChatStream(payload)) {
+        current += chunk
+        setMessages((msgs) => {
+          const idx = msgs.findIndex((m) => m.id === aiMsgId)
+          if (idx >= 0) {
+            return msgs.map((m, j) =>
+              j === idx ? { ...m, content: current } : m,
+            )
+          } else {
+            return [
+              ...msgs,
+              {
+                id: aiMsgId,
+                role: 'assistant',
+                content: current,
+                timestamp: Date.now(),
+              },
+            ]
+          }
+        })
+      }
     } catch {
       setMessages((msgs) => [
         ...msgs,

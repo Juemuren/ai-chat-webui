@@ -33,7 +33,7 @@ export async function sendChat(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ ...payload, stream: false }),
   })
 
   if (!res.ok) {
@@ -42,4 +42,42 @@ export async function sendChat(
 
   const data = await res.json()
   return data as OllamaResponse
+}
+
+// Ollama 流式回复，返回 async generator
+export async function* sendChatStream(
+  payload: OllamaRequest,
+): AsyncGenerator<string, void, void> {
+  const res = await fetch(`${BASE_URL}/api/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ ...payload, stream: true }),
+  })
+
+  if (!res.ok || !res.body) throw new Error('Stream response error')
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder('utf-8')
+  let buffer = ''
+  while (true) {
+    const { value, done } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+    // 按行分割处理 JSON
+    let idx
+    while ((idx = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, idx).trim()
+      buffer = buffer.slice(idx + 1)
+      if (!line) continue
+      try {
+        const obj = JSON.parse(line)
+        if (obj.message && obj.message.content) {
+          yield obj.message.content
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  }
 }
