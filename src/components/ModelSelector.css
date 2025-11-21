@@ -1,0 +1,45 @@
+.model-selector-row {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.model-selector-label {
+  font-size: 15px;
+  font-weight: 500;
+  margin-right: 8px;
+  color: #2357d5;
+  letter-spacing: 1px;
+}
+
+.modern-select {
+  border: 1.5px solid #4f8cff;
+  border-radius: 6px;
+  background: #f7faff;
+  color: #2357d5;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 6px 18px 6px 10px;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(79, 140, 255, 0.08);
+  appearance: none;
+  min-width: 120px;
+  transition:
+    border 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+}
+.modern-select:focus {
+  border: 1.5px solid #2357d5;
+  box-shadow: 0 4px 16px rgba(79, 140, 255, 0.15);
+}
+.modern-select:disabled {
+  background: #f0f0f0;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.model-selector-option {
+  color: #222;
+  font-weight: 400;
+}

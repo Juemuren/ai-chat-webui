@@ -30,9 +30,6 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
 }) => {
   const info = roleInfo[message.role]
 
-  // 独立代码块组件，解决 Hook 问题
-  // 兼容 react-markdown 组件类型，且 Hooks 顺序固定
-
   const CodeBlock = ({
     children,
     className,
@@ -83,6 +80,22 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
     }
   }
 
+  // 复制 AI 消息内容
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle')
+  const handleCopyContent = () => {
+    navigator.clipboard.writeText(message.content)
+    setCopyStatus('copied')
+    setTimeout(() => setCopyStatus('idle'), 1200)
+  }
+
+  // 重新生成按钮点击（触发自定义事件，父组件监听）
+  const handleRegenerate = () => {
+    const event = new CustomEvent('regenerate-ai-message', {
+      detail: { message },
+    })
+    window.dispatchEvent(event)
+  }
+
   return (
     <div className={`chat-message-row ${message.role}`}>
       <img className="chat-avatar" src={info.avatar} alt={info.name} />
@@ -103,6 +116,24 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
             message.content
           )}
         </div>
+        {message.role === 'assistant' && (
+          <div className="ai-message-actions">
+            <button
+              className="ai-copy-btn action-btn"
+              onClick={handleCopyContent}
+              type="button"
+            >
+              {copyStatus === 'copied' ? '已复制' : '复制内容'}
+            </button>
+            <button
+              className="ai-regenerate-btn action-btn"
+              onClick={handleRegenerate}
+              type="button"
+            >
+              <span className="icon-rotate">重新生成</span>
+            </button>
+          </div>
+        )}
         <div className="chat-time">
           {new Date(message.timestamp).toLocaleTimeString()}
         </div>

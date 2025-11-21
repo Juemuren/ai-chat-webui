@@ -1,4 +1,5 @@
 import React from 'react'
+import './ModelSelector.css'
 
 interface ModelSelectorProps {
   models: { name: string }[]
@@ -13,16 +14,16 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   onChange,
   loading,
 }) => (
-  <div style={{ marginBottom: 12 }}>
-    <label style={{ fontSize: 14, marginRight: 8 }}>选择模型：</label>
+  <div className="model-selector-row">
+    <label className="model-selector-label">选择模型</label>
     <select
       value={model}
       onChange={(e) => onChange(e.target.value)}
       disabled={loading || models.length === 0}
-      style={{ padding: '4px 8px', fontSize: 14 }}
+      className="modern-select"
     >
       {models.map((m) => (
-        <option key={m.name} value={m.name}>
+        <option key={m.name} value={m.name} className="model-selector-option">
           {m.name}
         </option>
       ))}

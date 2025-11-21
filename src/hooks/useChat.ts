@@ -11,14 +11,7 @@ import {
 } from '../services/chatAdapter'
 
 export function useChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'init1',
-      role: 'assistant',
-      content: '你好！我是 AI 助手，你需要什么帮助？',
-      timestamp: Date.now(),
-    },
-  ])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [models, setModels] = useState<{ name: string }[]>([])
   const [model, setModel] = useState('')
@@ -33,61 +26,112 @@ export function useChat() {
       .catch(() => setModels([]))
   }, [])
 
-  // 打字机流式效果
-  const send = useCallback(async () => {
-    const text = input.trim()
-    if (!text || loading || !model) return
-    const userMsg: ChatMessage = {
-      id: Date.now() + Math.random().toString(36).slice(2, 8),
-      role: 'user',
-      content: text,
+  // 生成唯一 ID
+  const genId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID)
+      return crypto.randomUUID()
+    // 保留原方法，兼容旧浏览器
+    return Date.now() + Math.random().toString(36).slice(2, 8)
+  }
+
+  // 插入 AI 占位消息
+  const insertAIMsg = (ctx: ChatMessage[], aiMsgId: string): ChatMessage[] => [
+    ...ctx,
+    {
+      id: aiMsgId,
+      role: 'assistant' as const,
+      content: 'AI 正在思考...',
       timestamp: Date.now(),
+    },
+  ]
+
+  // 插入 user+AI 占位消息
+  const insertUserAndAIMsg = (
+    ctx: ChatMessage[],
+    userMsg: ChatMessage,
+    aiMsgId: string,
+  ): ChatMessage[] => [
+    ...ctx,
+    userMsg,
+    {
+      id: aiMsgId,
+      role: 'assistant' as const,
+      content: 'AI 正在思考...',
+      timestamp: Date.now(),
+    },
+  ]
+
+  // AI 流式回复
+  const updateAIMsg = (
+    msgs: ChatMessage[],
+    aiMsgId: string,
+    content: string,
+  ): ChatMessage[] => {
+    const idx = msgs.findIndex((m) => m.id === aiMsgId)
+    if (idx >= 0) {
+      return msgs.map((m, j) => (j === idx ? { ...m, content } : m))
+    } else {
+      return msgs
     }
-    setMessages((msgs) => [...msgs, userMsg])
-    setInput('')
-    setLoading(true)
-    try {
-      const payload = {
-        model,
-        messages: toOllamaMessages([...messages, userMsg]),
+  }
+
+  // 支持传递上下文和内容的 send 方法
+  const send = useCallback(
+    async (customContext?: ChatMessage[], customUserContent?: string) => {
+      const isRegenerate =
+        customContext && (!customUserContent || customUserContent === '')
+      const text = isRegenerate ? '' : (customUserContent ?? input).trim()
+      if ((!isRegenerate && !text) || loading || !model) return
+      const aiMsgId = genId()
+      if (isRegenerate) {
+        setMessages(() => insertAIMsg(customContext!, aiMsgId))
+      } else {
+        const userMsg: ChatMessage = {
+          id: genId(),
+          role: 'user' as const,
+          content: text,
+          timestamp: Date.now(),
+        }
+        setMessages((msgs) => insertUserAndAIMsg(msgs, userMsg, aiMsgId))
+        setInput('')
       }
-      const aiMsgId = Date.now() + Math.random().toString(36).slice(2, 8)
-      let current = ''
-      for await (const chunk of sendChatStream(payload)) {
-        current += chunk
-        setMessages((msgs) => {
-          const idx = msgs.findIndex((m) => m.id === aiMsgId)
-          if (idx >= 0) {
-            return msgs.map((m, j) =>
-              j === idx ? { ...m, content: current } : m,
-            )
-          } else {
-            return [
-              ...msgs,
+      setLoading(true)
+      try {
+        let payload
+        if (isRegenerate) {
+          payload = {
+            model,
+            messages: toOllamaMessages(customContext!),
+          }
+        } else {
+          payload = {
+            model,
+            messages: toOllamaMessages([
+              ...(customContext ?? messages),
               {
-                id: aiMsgId,
-                role: 'assistant',
-                content: current,
+                id: genId(),
+                role: 'user' as const,
+                content: text,
                 timestamp: Date.now(),
               },
-            ]
+            ]),
           }
-        })
+        }
+        let current = ''
+        for await (const chunk of sendChatStream(payload)) {
+          current += chunk
+          setMessages((msgs) => updateAIMsg(msgs, aiMsgId, current))
+        }
+      } catch {
+        setMessages((msgs) =>
+          updateAIMsg(msgs, aiMsgId, 'AI 回复失败，请稍后重试'),
+        )
+      } finally {
+        setLoading(false)
       }
-    } catch {
-      setMessages((msgs) => [
-        ...msgs,
-        {
-          id: Date.now() + Math.random().toString(36).slice(2, 8),
-          role: 'assistant',
-          content: 'AI 回复失败，请稍后重试',
-          timestamp: Date.now(),
-        },
-      ])
-    } finally {
-      setLoading(false)
-    }
-  }, [input, loading, model, messages])
+    },
+    [input, loading, model, messages],
+  )
 
   return {
     messages,
