@@ -19,7 +19,7 @@ export const handlers = [
       const { messages, model } = await request.json()
       const userMsg = messages[messages.length - 1]?.content || ''
       // 简单地重复用户输入，方便后续调试
-      const reply = `Echo: ${userMsg}`
+      const reply = `Mock Enable: \n\n${userMsg}`
       // 模拟流式响应
       const chunks = reply.match(/[\s\S]{1,5}/g) || []
 
