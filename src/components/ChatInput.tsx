@@ -30,7 +30,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       />
       <button
         className="chat-send-btn"
-        onClick={onSend}
+        onClick={() => onSend()}
         disabled={!value.trim()}
       >
         发送
