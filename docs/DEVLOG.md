@@ -22,6 +22,7 @@
 - JavaScript 运行时 nodejs
 - 包管理器 npm
 - 编辑器 vscode
+- API 端点 ollama
 
 ### 辅助工具
 
@@ -32,7 +33,7 @@
 
 - 模拟数据 msw
 - Markdown 渲染 react-markdown
-- 代码高亮 highlight.js
+- 代码高亮 react-syntax-highlighter
 
 ## MVP 功能边界
 
