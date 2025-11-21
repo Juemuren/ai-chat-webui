@@ -1,9 +1,5 @@
 import type { ChatMessage } from '../types/chat'
-import type {
-  OllamaMessage,
-  // OllamaRequest,
-  // OllamaResponse,
-} from '../types/ollama'
+import type { OllamaMessage } from '../types/ollama'
 
 // 聊天消息转 Ollama 消息
 export function toOllamaMessage(msg: ChatMessage): OllamaMessage {

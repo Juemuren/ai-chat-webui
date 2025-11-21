@@ -1,17 +1,20 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { ChatMessage } from '../types/chat'
+import { fetchModels, sendChatStream } from '../services/ollama'
+import { toOllamaMessages } from '../services/chatAdapter'
+import { useLocalStorage } from './useLocalStorage'
 import {
-  fetchModels,
-  // sendChat,
-  sendChatStream,
-} from '../services/ollama'
-import {
-  toOllamaMessages,
-  // fromOllamaMessage
-} from '../services/chatAdapter'
+  genId,
+  insertAIMsg,
+  insertUserAndAIMsg,
+  updateAIMsg,
+} from '../utils/chatMessage'
 
 export function useChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [messages, setMessages] = useLocalStorage<ChatMessage[]>(
+    'chat_messages',
+    [],
+  )
   const [input, setInput] = useState('')
   const [models, setModels] = useState<{ name: string }[]>([])
   const [model, setModel] = useState('')
@@ -26,55 +29,6 @@ export function useChat() {
       .catch(() => setModels([]))
   }, [])
 
-  // 生成唯一 ID
-  const genId = () => {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID)
-      return crypto.randomUUID()
-    // 保留原方法，兼容旧浏览器
-    return Date.now() + Math.random().toString(36).slice(2, 8)
-  }
-
-  // 插入 AI 占位消息
-  const insertAIMsg = (ctx: ChatMessage[], aiMsgId: string): ChatMessage[] => [
-    ...ctx,
-    {
-      id: aiMsgId,
-      role: 'assistant' as const,
-      content: 'AI 正在思考...',
-      timestamp: Date.now(),
-    },
-  ]
-
-  // 插入 user+AI 占位消息
-  const insertUserAndAIMsg = (
-    ctx: ChatMessage[],
-    userMsg: ChatMessage,
-    aiMsgId: string,
-  ): ChatMessage[] => [
-    ...ctx,
-    userMsg,
-    {
-      id: aiMsgId,
-      role: 'assistant' as const,
-      content: 'AI 正在思考...',
-      timestamp: Date.now(),
-    },
-  ]
-
-  // AI 流式回复
-  const updateAIMsg = (
-    msgs: ChatMessage[],
-    aiMsgId: string,
-    content: string,
-  ): ChatMessage[] => {
-    const idx = msgs.findIndex((m) => m.id === aiMsgId)
-    if (idx >= 0) {
-      return msgs.map((m, j) => (j === idx ? { ...m, content } : m))
-    } else {
-      return msgs
-    }
-  }
-
   // 支持传递上下文和内容的 send 方法
   const send = useCallback(
     async (customContext?: ChatMessage[], customUserContent?: string) => {
@@ -88,7 +42,7 @@ export function useChat() {
       } else {
         const userMsg: ChatMessage = {
           id: genId(),
-          role: 'user' as const,
+          role: 'user',
           content: text,
           timestamp: Date.now(),
         }
@@ -110,7 +64,7 @@ export function useChat() {
               ...(customContext ?? messages),
               {
                 id: genId(),
-                role: 'user' as const,
+                role: 'user',
                 content: text,
                 timestamp: Date.now(),
               },
@@ -130,7 +84,7 @@ export function useChat() {
         setLoading(false)
       }
     },
-    [input, loading, model, messages],
+    [input, loading, model, messages, setMessages],
   )
 
   return {
