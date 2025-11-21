@@ -73,3 +73,38 @@
   margin-top: 2px;
   text-align: right;
 }
+
+/* 代码块包裹 */
+.codeblock-wrapper {
+  margin: 10px 0;
+}
+.codeblock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  height: 32px;
+  background: #888;
+  border-radius: 6px 6px 0 0;
+  border-bottom: 1px solid #eee;
+}
+.codeblock-lang {
+  font-size: 12px;
+  color: #eee;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  pointer-events: none;
+}
+.codeblock-copy-btn {
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 4px;
+  padding: 1px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.codeblock-copy-btn:hover {
+  background: #e6f4ff;
+}

@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import Markdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import './markdown.css'
 import type { ChatMessage } from '../types/chat'
 import './ChatMessageItem.css'
+import './markdown.css'
+
 import AssistantAvatar from '../assets/ollama.png'
 import UserAvatar from '../assets/sakiko.jpg'
 
