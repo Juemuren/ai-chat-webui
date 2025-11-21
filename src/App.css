@@ -1,0 +1,15 @@
+.chat-app-container {
+  max-width: 420px;
+  margin: 40px auto;
+  background: #fafcff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px #0002;
+  padding: 24px 16px 12px 16px;
+}
+.chat-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #1677ff;
+}

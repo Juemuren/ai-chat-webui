@@ -1,0 +1,32 @@
+.chat-input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 0;
+}
+.chat-input-textarea {
+  flex: 1;
+  min-height: 36px;
+  max-height: 80px;
+  resize: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 15px;
+  outline: none;
+}
+.chat-send-btn {
+  background: #1677ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0 18px;
+  height: 36px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.chat-send-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

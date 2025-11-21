@@ -30,6 +30,7 @@
 
 ### 第三方库
 
+- 模拟数据 msw
 - Markdown 渲染 react-markdown
 - 代码高亮 highlight.js
 
@@ -58,11 +59,13 @@
 消息数据结构如下
 
 ```typescript
-interface Message {
-  id: string
-  content: string
-  sender: 'user' | 'assistant'
-  timestamp: Date
+export type ChatRole = 'user' | 'assistant'
+
+export interface ChatMessage {
+  id: string // 唯一标识
+  role: ChatRole // 角色
+  content: string // 消息内容
+  timestamp: number // 时间戳
 }
 ```
 

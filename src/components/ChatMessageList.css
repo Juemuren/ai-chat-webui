@@ -1,0 +1,9 @@
+.chat-message-list {
+  height: 400px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0001;
+  margin-bottom: 12px;
+}
