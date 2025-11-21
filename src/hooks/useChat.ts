@@ -76,9 +76,18 @@ export function useChat() {
           current += chunk
           setMessages((msgs) => updateAIMsg(msgs, aiMsgId, current))
         }
+        // 回复结束，标记 isFinished
+        setMessages((msgs) => updateAIMsg(msgs, aiMsgId, current, true))
       } catch {
+        // 回复出错，标记 isError
         setMessages((msgs) =>
-          updateAIMsg(msgs, aiMsgId, 'AI 回复失败，请稍后重试'),
+          updateAIMsg(
+            msgs,
+            aiMsgId,
+            'AI 回复失败，请稍后重试',
+            undefined,
+            true,
+          ),
         )
       } finally {
         setLoading(false)

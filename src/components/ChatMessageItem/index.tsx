@@ -50,6 +50,8 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
           <MessageActions
             content={message.content}
             onRegenerate={handleRegenerate}
+            isFinished={message.isFinished!}
+            isError={message.isError!}
           />
         )}
         <div className="chat-time">

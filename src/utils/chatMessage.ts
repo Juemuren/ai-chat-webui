@@ -42,10 +42,21 @@ export function updateAIMsg(
   msgs: ChatMessage[],
   aiMsgId: string,
   content: string,
+  isFinished?: boolean,
+  isError?: boolean,
 ): ChatMessage[] {
   const idx = msgs.findIndex((m) => m.id === aiMsgId)
   if (idx >= 0) {
-    return msgs.map((m, j) => (j === idx ? { ...m, content } : m))
+    return msgs.map((m, j) =>
+      j === idx
+        ? {
+            ...m,
+            content,
+            ...(isFinished !== undefined ? { isFinished } : {}),
+            ...(isError !== undefined ? { isError } : {}),
+          }
+        : m,
+    )
   } else {
     return msgs
   }
