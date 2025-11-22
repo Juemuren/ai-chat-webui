@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
+import { SessionProvider } from './contexts/session/SessionProvider.tsx'
 
 async function enableMocking() {
   if (import.meta.env.DEV) {
@@ -12,7 +13,9 @@ async function enableMocking() {
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <App />
+      <SessionProvider>
+        <App />
+      </SessionProvider>
     </StrictMode>,
   )
 })

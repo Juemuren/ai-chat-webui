@@ -3,7 +3,7 @@ import type { ChatMessage } from '../types/chat'
 import type { OllamaRequest } from '../types/ollama'
 import { fetchModels, sendChatStream } from '../services/ollama'
 import { toOllamaMessages } from '../services/chatAdapter'
-import { useLocalStorage } from './useLocalStorage'
+import { useSession } from '../hooks/useSession'
 import {
   genId,
   insertAIMsg,
@@ -12,10 +12,8 @@ import {
 } from '../utils/chatMessage'
 
 export function useChat() {
-  const [messages, setMessages] = useLocalStorage<ChatMessage[]>(
-    'chat_messages',
-    [],
-  )
+  // 使用 SessionContext 获取会话状态和方法
+  const { currentMessages: messages, updateSessionMessages } = useSession()
   const [input, setInput] = useState('')
   const [models, setModels] = useState<{ name: string }[]>([])
   const [model, setModel] = useState('')
@@ -36,7 +34,7 @@ export function useChat() {
       const aiMsgId = genId()
 
       if (isRegenerate && customContext) {
-        setMessages(() => insertAIMsg(customContext, aiMsgId))
+        updateSessionMessages(insertAIMsg(customContext, aiMsgId))
       } else if (text) {
         const userMsg: ChatMessage = {
           id: genId(),
@@ -44,13 +42,15 @@ export function useChat() {
           content: text,
           timestamp: Date.now(),
         }
-        setMessages((msgs) => insertUserAndAIMsg(msgs, userMsg, aiMsgId))
+        updateSessionMessages((prevMessages) =>
+          insertUserAndAIMsg(prevMessages, userMsg, aiMsgId),
+        )
         setInput('')
       }
 
       return aiMsgId
     },
-    [setMessages, setInput],
+    [updateSessionMessages, setInput],
   )
 
   // 构建请求 payload
@@ -85,12 +85,16 @@ export function useChat() {
       let current = ''
       for await (const chunk of sendChatStream(payload, signal)) {
         current += chunk
-        setMessages((msgs) => updateAIMsg(msgs, aiMsgId, current))
+        updateSessionMessages((prevMessages) =>
+          updateAIMsg(prevMessages, aiMsgId, current),
+        )
       }
       // 回复结束，标记 isFinished
-      setMessages((msgs) => updateAIMsg(msgs, aiMsgId, current, true))
+      updateSessionMessages((prevMessages) =>
+        updateAIMsg(prevMessages, aiMsgId, current, true),
+      )
     },
-    [setMessages],
+    [updateSessionMessages],
   )
 
   // 处理错误
@@ -101,9 +105,9 @@ export function useChat() {
       } else {
         // 回复失败，标记 isError
         console.log(error)
-        setMessages((msgs) =>
+        updateSessionMessages((prevMessages) =>
           updateAIMsg(
-            msgs,
+            prevMessages,
             aiMsgId,
             'AI 回复失败，请稍后重试',
             undefined,
@@ -112,28 +116,28 @@ export function useChat() {
         )
       }
     },
-    [setMessages],
+    [updateSessionMessages],
   )
 
   const abortControllerRef = useRef<AbortController | null>(null)
 
+  // 用于停止生成回复的 stop 回调钩子
   const stop = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
-      // 找到当前正在生成的 AI 消息并将其标记为已完成
-      setMessages((msgs) => {
-        const lastMsg = msgs[msgs.length - 1]
+      updateSessionMessages((prevMessages) => {
+        const lastMsg = prevMessages[prevMessages.length - 1]
         if (lastMsg && lastMsg.role === 'assistant' && !lastMsg.isFinished) {
-          return updateAIMsg(msgs, lastMsg.id, lastMsg.content, true)
+          return updateAIMsg(prevMessages, lastMsg.id, lastMsg.content, true)
         }
-        return msgs
+        return prevMessages
       })
     }
     setLoading(false)
-  }, [setMessages])
+  }, [updateSessionMessages])
 
-  // 支持传递上下文和内容的 send 方法
+  // 支持传递上下文和内容的 send 回调钩子
   const send = useCallback(
     async (customContext?: ChatMessage[], customUserContent?: string) => {
       const isRegenerate = (customContext &&

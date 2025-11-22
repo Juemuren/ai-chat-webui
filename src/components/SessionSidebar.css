@@ -1,0 +1,157 @@
+.session-sidebar {
+  width: 15%;
+  height: 100%;
+  background-color: #f5f5f5;
+  border-right: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.new-chat-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d9d9d9;
+  background-color: #fff;
+  border-radius: 6px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.new-chat-btn:hover {
+  background-color: #1677ff;
+  color: #fff;
+  border-color: #1677ff;
+}
+
+.session-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.session-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  margin: 4px 8px;
+}
+
+.session-item:hover {
+  background-color: #e6f7ff;
+}
+
+.session-item.active {
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+.session-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-title {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.session-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.session-message-count {
+  font-size: 11px;
+  background-color: #d9d9d9;
+  color: #666;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.session-item.active .session-message-count {
+  background-color: #91d5ff;
+  color: #1677ff;
+}
+
+.delete-session-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background-color: transparent;
+  color: #999;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-left: 8px;
+  opacity: 0;
+}
+
+.session-item:hover .delete-session-btn {
+  opacity: 1;
+}
+
+.delete-session-btn:hover {
+  background-color: #ff4d4f;
+  color: #fff;
+}
+
+/* 滚动条样式 */
+.session-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.session-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.session-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.session-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

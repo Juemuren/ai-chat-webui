@@ -2,7 +2,9 @@ import React from 'react'
 import { ChatMessageList } from './components/ChatMessageList'
 import { ChatInput } from './components/ChatInput'
 import { ModelSelector } from './components/ModelSelector'
+import { SessionSidebar } from './components/SessionSidebar'
 import { useChat } from './hooks/useChat'
+import { useSession } from './hooks/useSession'
 import './App.css'
 
 const App: React.FC = () => {
@@ -17,6 +19,14 @@ const App: React.FC = () => {
     send,
     stop,
   } = useChat()
+
+  const {
+    sessions,
+    activeSessionId,
+    createSession,
+    switchSession,
+    deleteSession,
+  } = useSession()
 
   // 重新生成 AI 消息
   React.useEffect(() => {
@@ -37,22 +47,31 @@ const App: React.FC = () => {
   }, [messages, send])
 
   return (
-    <div className="chat-app-container">
-      <h2 className="chat-title">AI 对话 Demo</h2>
-      <ModelSelector
-        models={models}
-        model={model}
-        onChange={setModel}
-        loading={loading}
+    <div className="app-container">
+      <SessionSidebar
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        onSessionClick={switchSession}
+        onCreateSession={() => createSession()}
+        onDeleteSession={deleteSession}
       />
-      <ChatMessageList messages={messages} />
-      <ChatInput
-        value={input}
-        loading={loading}
-        onChange={setInput}
-        onSend={send}
-        onStop={stop}
-      />
+      <div className="chat-app-container">
+        <h2 className="chat-title">AI 对话 Demo</h2>
+        <ModelSelector
+          models={models}
+          model={model}
+          onChange={setModel}
+          loading={loading}
+        />
+        <ChatMessageList messages={messages} />
+        <ChatInput
+          value={input}
+          loading={loading}
+          onChange={setInput}
+          onSend={send}
+          onStop={stop}
+        />
+      </div>
     </div>
   )
 }
