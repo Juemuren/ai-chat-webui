@@ -63,7 +63,7 @@ const MessageBubble: React.FC<{
       </div>
     )
   }
-  return <>{message.content}</>
+  return <pre>{message.content}</pre>
 })
 
 export default MessageBubble
