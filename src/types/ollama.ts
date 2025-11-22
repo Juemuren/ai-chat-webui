@@ -16,5 +16,4 @@ export interface OllamaResponse {
 
 export interface OllamaModel {
   name: string
-  size: number
 }

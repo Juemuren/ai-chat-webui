@@ -21,6 +21,6 @@ export default defineConfig([
     },
   },
   {
-    ignores: ['public/**']
-  }
+    ignores: ['public/**'],
+  },
 ])

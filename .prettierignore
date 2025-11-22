@@ -1,2 +1,5 @@
 # Ignore
 docs
+src/mocks/data
+package.json
+*md
