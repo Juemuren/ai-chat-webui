@@ -26,6 +26,7 @@ const App: React.FC = () => {
     createSession,
     switchSession,
     deleteSession,
+    updateSessionTitle,
   } = useSession()
 
   // 重新生成 AI 消息
@@ -54,6 +55,7 @@ const App: React.FC = () => {
         onSessionClick={switchSession}
         onCreateSession={() => createSession()}
         onDeleteSession={deleteSession}
+        onUpdateSessionTitle={updateSessionTitle}
       />
       <div className="chat-app-container">
         <h2 className="chat-title">AI 对话 Demo</h2>

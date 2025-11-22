@@ -8,6 +8,7 @@ interface SessionSidebarProps {
   onSessionClick: (sessionId: string) => void
   onCreateSession: () => void
   onDeleteSession: (sessionId: string) => void
+  onUpdateSessionTitle: (sessionId: string, newTitle: string) => void
 }
 
 export const SessionSidebar: React.FC<SessionSidebarProps> = ({
@@ -16,7 +17,16 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
   onSessionClick,
   onCreateSession,
   onDeleteSession,
+  onUpdateSessionTitle,
 }) => {
+  // 跟踪当前正在编辑的会话ID
+  const [editingSessionId, setEditingSessionId] = React.useState<string | null>(
+    null,
+  )
+  // 存储编辑中的标题
+  const [editingTitle, setEditingTitle] = React.useState<string>('')
+  // 引用编辑输入框
+  const editInputRef = React.useRef<HTMLInputElement>(null)
   // 格式化时间
   const formatTime = (timestamp: number): string => {
     const date = new Date(timestamp)
@@ -47,6 +57,55 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
     }
   }
 
+  // 开始编辑会话标题
+  const handleStartEditing = (
+    e: React.MouseEvent,
+    sessionId: string,
+    currentTitle: string,
+  ) => {
+    e.stopPropagation() // 阻止事件冒泡，避免触发会话点击
+    setEditingSessionId(sessionId)
+    setEditingTitle(currentTitle)
+  }
+
+  // 保存编辑后的会话标题
+  const handleSaveTitle = (sessionId: string) => {
+    const trimmedTitle = editingTitle.trim()
+    if (
+      trimmedTitle &&
+      trimmedTitle !== sessions.find((s) => s.id === sessionId)?.title
+    ) {
+      onUpdateSessionTitle(sessionId, trimmedTitle)
+    }
+    setEditingSessionId(null)
+  }
+
+  // 取消编辑
+  const handleCancelEditing = () => {
+    setEditingSessionId(null)
+  }
+
+  // 处理键盘事件
+  const handleKeyDown = (e: React.KeyboardEvent, sessionId: string) => {
+    if (e.key === 'Enter') {
+      handleSaveTitle(sessionId)
+    } else if (e.key === 'Escape') {
+      handleCancelEditing()
+    }
+  }
+
+  // 当编辑会话ID变化时，聚焦到输入框
+  React.useEffect(() => {
+    if (editingSessionId && editInputRef.current) {
+      // 使用setTimeout确保DOM已更新
+      setTimeout(() => {
+        editInputRef.current?.focus()
+        // 选中整个输入内容
+        editInputRef.current?.select()
+      }, 0)
+    }
+  }, [editingSessionId])
+
   return (
     <div className="session-sidebar">
       <div className="sidebar-header">
@@ -68,7 +127,28 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
             onClick={() => onSessionClick(session.id)}
           >
             <div className="session-content">
-              <div className="session-title">{session.title}</div>
+              {editingSessionId === session.id ? (
+                <input
+                  ref={editInputRef}
+                  type="text"
+                  className="session-title-edit"
+                  value={editingTitle}
+                  onChange={(e) => setEditingTitle(e.target.value)}
+                  onBlur={() => handleSaveTitle(session.id)}
+                  onKeyDown={(e) => handleKeyDown(e, session.id)}
+                  placeholder="输入会话标题"
+                />
+              ) : (
+                <div
+                  className="session-title"
+                  onClick={(e) =>
+                    handleStartEditing(e, session.id, session.title)
+                  }
+                  title="点击编辑会话名称"
+                >
+                  {session.title}
+                </div>
+              )}
               <div className="session-meta">
                 <span className="session-time">
                   {formatTime(session.updatedAt)}

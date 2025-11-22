@@ -13,4 +13,5 @@ export interface SessionContextType {
       | ChatMessage[]
       | ((prevMessages: ChatMessage[]) => ChatMessage[]),
   ) => void
+  updateSessionTitle: (sessionId: string, title: string) => void
 }

@@ -110,6 +110,24 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
     [activeSessionId, createSession, setSessions],
   )
 
+  // 更新会话标题
+  const updateSessionTitle = useCallback(
+    (sessionId: string, title: string) => {
+      setSessions((prev) =>
+        prev.map((session) =>
+          session.id === sessionId
+            ? {
+                ...session,
+                title: title.trim(),
+                updatedAt: Date.now(),
+              }
+            : session,
+        ),
+      )
+    },
+    [setSessions],
+  )
+
   // 更新会话消息
   const updateSessionMessages = useCallback(
     (
@@ -162,6 +180,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
     switchSession,
     deleteSession,
     updateSessionMessages,
+    updateSessionTitle,
   }
 
   return (

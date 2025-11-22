@@ -85,6 +85,33 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.session-title:hover {
+  background-color: rgba(22, 119, 255, 0.1);
+}
+
+.session-title-edit {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+  padding: 4px 6px;
+  border: 1px solid #1677ff;
+  border-radius: 4px;
+  background-color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 500;
+  outline: none;
+}
+
+.session-title-edit:focus {
+  border-color: #4096ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
 }
 
 .session-meta {
