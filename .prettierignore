@@ -1,5 +1,11 @@
-# Ignore
+# Texts
 docs
 src/mocks/data
-package.json
 *md
+
+# Generated script
+public/mockServiceWorker.js
+
+# Managed by npm
+package-lock.json
+package.json
