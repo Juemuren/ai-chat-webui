@@ -2,18 +2,30 @@ import './ChatInput.css'
 
 interface ChatInputProps {
   value: string
+  loading: boolean
   onChange: (v: string) => void
   onSend: () => void
+  onStop: () => void
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   value,
+  loading,
   onChange,
   onSend,
+  onStop,
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
+      onSend()
+    }
+  }
+
+  const handleClick = () => {
+    if (loading) {
+      onStop()
+    } else {
       onSend()
     }
   }
@@ -30,10 +42,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       />
       <button
         className="chat-send-btn"
-        onClick={() => onSend()}
-        disabled={!value.trim()}
+        onClick={handleClick}
+        disabled={!loading && !value.trim()}
       >
-        发送
+        {loading ? '停止' : '发送'}
       </button>
     </div>
   )

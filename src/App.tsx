@@ -6,8 +6,17 @@ import { useChat } from './hooks/useChat'
 import './App.css'
 
 const App: React.FC = () => {
-  const { messages, input, setInput, send, loading, models, model, setModel } =
-    useChat()
+  const {
+    messages,
+    models,
+    model,
+    input,
+    loading,
+    setModel,
+    setInput,
+    send,
+    stop,
+  } = useChat()
 
   // 重新生成 AI 消息
   React.useEffect(() => {
@@ -37,7 +46,13 @@ const App: React.FC = () => {
         loading={loading}
       />
       <ChatMessageList messages={messages} />
-      <ChatInput value={input} onChange={setInput} onSend={send} />
+      <ChatInput
+        value={input}
+        loading={loading}
+        onChange={setInput}
+        onSend={send}
+        onStop={stop}
+      />
     </div>
   )
 }

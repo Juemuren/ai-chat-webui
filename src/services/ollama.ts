@@ -47,6 +47,7 @@ export async function sendChat(
 // Ollama 流式回复，返回 async generator
 export async function* sendChatStream(
   payload: OllamaRequest,
+  signal?: AbortSignal,
 ): AsyncGenerator<string, void, void> {
   const res = await fetch(`${BASE_URL}/api/chat`, {
     method: 'POST',
@@ -54,6 +55,7 @@ export async function* sendChatStream(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ ...payload, stream: true }),
+    signal,
   })
 
   if (!res.ok || !res.body) throw new Error('Stream response error')
