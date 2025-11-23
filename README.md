@@ -1,6 +1,19 @@
 # AI 聊天对话应用
 
-本项目使用 React + TypeScript + Vite 进行开发。可阅读文档了解更多有关[技术选型](./docs/TECHSTACK.md)、[开发日志](./docs/DEVLOG.md)、和[具体实现](./docs/IMPL.md)的细节
+本项目使用 React + TypeScript + Vite 进行开发。可阅读开发文档了解更多细节
+
+- [技术选型](./docs/TECHSTACK.md)
+- [开发日志](./docs/DEVLOG.md)
+- [应用架构](./docs/ARCH.md)
+- [实现细节](./docs/IMPL.md)
+
+## 简介
+
+本应用实现了 AI 聊天的 Web 界面，除了基本的聊天功能外，还拥有丰富的特性
+
+- 多会话管理
+- 流式回复
+- 模型选择
 
 ## 运行
 
@@ -16,9 +29,9 @@ npm run dev
 本项目提供了 2 种打包模式
 
 - 使用 Mock 模拟数据
-- 使用本地 Ollama 服务器
+- 使用本地 Ollama 服务
 
-### Mock
+### Mock 模拟数据
 
 如果需要在打包后使用 Mock 模拟数据，请用如下命令打包
 
@@ -35,7 +48,7 @@ python -m http.server # 默认端口为 8000
 npx http-server # 默认端口为 8080
 ```
 
-### Ollama
+### 本地 Ollama 服务
 
 如果需要在打包后使用本地 Ollama 服务，请用如下命令打包
 
