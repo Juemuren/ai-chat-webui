@@ -1,4 +1,5 @@
-import React, { useState, useCallback, memo } from 'react'
+import React, { memo } from 'react'
+import { useCopy } from '../../hooks/useCopy'
 import type { ChatMessage } from '../../types/chat'
 import Markdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -11,13 +12,7 @@ const CodeBlock: React.FC<React.HTMLAttributes<HTMLElement>> = memo(
       ? String(children.join(''))
       : String(children)
     const lang = match ? match[1] : ''
-    const [copied, setCopied] = useState(false)
-
-    const handleCopy = useCallback(() => {
-      navigator.clipboard.writeText(codeString)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1200)
-    }, [codeString])
+    const { copied, handleCopy } = useCopy(codeString)
 
     if (lang) {
       return (

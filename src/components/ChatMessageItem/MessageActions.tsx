@@ -1,4 +1,5 @@
-import React, { useState, useCallback, memo } from 'react'
+import React, { memo } from 'react'
+import { useCopy } from '../../hooks/useCopy'
 
 interface MessageActionsProps {
   content: string
@@ -9,23 +10,17 @@ interface MessageActionsProps {
 
 const MessageActions: React.FC<MessageActionsProps> = memo(
   ({ content, onRegenerate, isFinished, isError }) => {
-    const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle')
-
-    const handleCopyContent = useCallback(() => {
-      navigator.clipboard.writeText(content)
-      setCopyStatus('copied')
-      setTimeout(() => setCopyStatus('idle'), 1200)
-    }, [content])
+    const { copied, handleCopy } = useCopy(content)
 
     return (
       <div className="ai-message-actions">
         {isFinished && (
           <button
             className="ai-copy-btn action-btn"
-            onClick={handleCopyContent}
+            onClick={handleCopy}
             type="button"
           >
-            {copyStatus === 'copied' ? '已复制' : '复制内容'}
+            {copied ? '已复制' : '复制内容'}
           </button>
         )}
         {(isFinished || isError) && (
