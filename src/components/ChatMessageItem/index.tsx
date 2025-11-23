@@ -32,8 +32,6 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
 }) => {
   const info = roleInfo[message.role]
 
-
-
   return (
     <div className={`chat-message-row ${message.role}`}>
       <img className="chat-avatar" src={info.avatar} alt={info.name} />

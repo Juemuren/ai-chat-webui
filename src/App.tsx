@@ -30,8 +30,6 @@ const App: React.FC = () => {
     updateSessionTitle,
   } = useSession()
 
-
-
   return (
     <div className="app-container">
       <SessionSidebar
@@ -50,7 +48,10 @@ const App: React.FC = () => {
           onChange={setModel}
           loading={loading}
         />
-        <ChatMessageList messages={messages} onRegenerateMessage={regenerateMessage} />
+        <ChatMessageList
+          messages={messages}
+          onRegenerateMessage={regenerateMessage}
+        />
         <ChatInput
           value={input}
           loading={loading}

@@ -150,13 +150,13 @@ export function useChatSend({
   const regenerateMessage = useCallback(
     async (message: ChatMessage) => {
       if (loading || message.role !== 'assistant') return
-      
+
       const idx = messages.findIndex((m) => m.id === message.id)
       if (idx <= 0) return
       const contextMsgs = messages.slice(0, idx)
       await send(contextMsgs, '')
     },
-    [messages, loading, send]
+    [messages, loading, send],
   )
 
   return {
