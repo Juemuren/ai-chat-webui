@@ -146,10 +146,24 @@ export function useChatSend({
     ],
   )
 
+  // 重新生成 AI 回复
+  const regenerateMessage = useCallback(
+    async (message: ChatMessage) => {
+      if (loading || message.role !== 'assistant') return
+      
+      const idx = messages.findIndex((m) => m.id === message.id)
+      if (idx <= 0) return
+      const contextMsgs = messages.slice(0, idx)
+      await send(contextMsgs, '')
+    },
+    [messages, loading, send]
+  )
+
   return {
     input,
     setInput,
     send,
     stop,
+    regenerateMessage,
   }
 }

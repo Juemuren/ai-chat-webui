@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import type { ChatMessage } from '../../types/chat'
 
 import MessageActions from './MessageActions'
@@ -10,6 +10,7 @@ import UserAvatar from '../../assets/sakiko.jpg'
 
 interface ChatMessageItemProps {
   message: ChatMessage
+  onRegenerate: (message: ChatMessage) => void
 }
 
 const roleInfo = {
@@ -27,16 +28,11 @@ const roleInfo = {
 
 export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
   message,
+  onRegenerate,
 }) => {
   const info = roleInfo[message.role]
 
-  // 重新生成事件
-  const handleRegenerate = useCallback(() => {
-    const event = new CustomEvent('regenerate-ai-message', {
-      detail: { message },
-    })
-    window.dispatchEvent(event)
-  }, [message])
+
 
   return (
     <div className={`chat-message-row ${message.role}`}>
@@ -49,7 +45,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
         {message.role === 'assistant' && (
           <MessageActions
             content={message.content}
-            onRegenerate={handleRegenerate}
+            onRegenerate={() => onRegenerate(message)}
             isFinished={message.isFinished!}
             isError={message.isError!}
           />

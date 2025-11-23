@@ -5,10 +5,12 @@ import './ChatMessageList.css'
 
 interface ChatMessageListProps {
   messages: ChatMessage[]
+  onRegenerateMessage: (message: ChatMessage) => void
 }
 
 export const ChatMessageList: React.FC<ChatMessageListProps> = ({
   messages,
+  onRegenerateMessage,
 }) => {
   const listRef = useRef<HTMLDivElement>(null)
 
@@ -22,7 +24,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
   return (
     <div className="chat-message-list" ref={listRef}>
       {messages.map((msg) => (
-        <ChatMessageItem key={msg.id} message={msg} />
+        <ChatMessageItem key={msg.id} message={msg} onRegenerate={onRegenerateMessage} />
       ))}
     </div>
   )

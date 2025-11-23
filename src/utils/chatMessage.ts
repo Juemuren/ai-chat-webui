@@ -14,7 +14,7 @@ export function insertAIMsg(
     ...ctx,
     {
       id: aiMsgId,
-      role: 'assistant' as const,
+      role: 'assistant',
       content: 'AI 正在思考...',
       timestamp: Date.now(),
     },
@@ -31,7 +31,7 @@ export function insertUserAndAIMsg(
     userMsg,
     {
       id: aiMsgId,
-      role: 'assistant' as const,
+      role: 'assistant',
       content: 'AI 正在思考...',
       timestamp: Date.now(),
     },

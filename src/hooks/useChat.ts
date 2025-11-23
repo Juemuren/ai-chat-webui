@@ -12,7 +12,7 @@ export function useChat() {
     updateSessionMessages,
   })
   const [loading, setLoading] = useState(false)
-  const { input, setInput, send, stop } = useChatSend({
+  const { input, setInput, send, stop, regenerateMessage } = useChatSend({
     updateSessionMessages,
     model,
     messages,
@@ -32,5 +32,6 @@ export function useChat() {
     models,
     model,
     setModel,
+    regenerateMessage,
   }
 }
