@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { ChatMessage } from '../types/chat'
 import type { OllamaRequest } from '../types/ollama'
 import { toOllamaMessages } from '../services/chatAdapter'
@@ -39,7 +39,7 @@ export function useChatSend({
   handleChatError,
 }: UseChatSendProps) {
   const [input, setInput] = useState('')
-  const abortControllerRef = React.useRef<AbortController | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // 准备聊天消息
   const prepareChatMessages = useCallback(

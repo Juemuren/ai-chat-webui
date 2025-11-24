@@ -5,15 +5,35 @@ import { genId } from '../../utils/chatMessage'
 import { SessionContext } from './SessionContext'
 import type { SessionContextType } from './types'
 
+// 创建新会话的辅助函数
+const createNewSession = (): ChatSession => ({
+  id: genId(),
+  title: '新对话',
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+  messages: [],
+})
+
+// 从第一条用户消息生成会话标题
+const generateSessionTitle = (messages: ChatMessage[]): string | null => {
+  const firstUserMsg = messages.find((msg) => msg.role === 'user')
+  if (!firstUserMsg) return null
+
+  return (
+    firstUserMsg.content.slice(0, 30) +
+    (firstUserMsg.content.length > 30 ? '...' : '')
+  )
+}
+
 export const SessionProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // 从 localStorage 加载会话列表
   const [sessions, setSessions] = useLocalStorage<ChatSession[]>(
     'chat_sessions',
     [],
   )
 
+  // 初始化活动会话 ID
   const [activeSessionId, setActiveSessionId] = useState<string>(() => {
     const savedId = localStorage.getItem('active_session_id')
     if (savedId && sessions.some((session) => session.id === savedId)) {
@@ -22,55 +42,47 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
     return sessions.length > 0 ? sessions[0].id : ''
   })
 
+  // 保存活动会话 ID 到 localStorage
   useEffect(() => {
     if (activeSessionId) {
       localStorage.setItem('active_session_id', activeSessionId)
     }
   }, [activeSessionId])
 
-  // 会话初始化
+  // 会话初始化逻辑
   useEffect(() => {
     if (sessions.length === 0) {
+      // 没有会话时创建新会话
       setTimeout(() => {
-        const newSessionId = genId()
-        const newSession: ChatSession = {
-          id: newSessionId,
-          title: '新对话',
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-          messages: [],
-        }
+        const newSession = createNewSession()
         setSessions([newSession])
-        setActiveSessionId(newSessionId)
+        setActiveSessionId(newSession.id)
       }, 0)
     } else if (!activeSessionId) {
-      // 如果有会话但没有活动会话，设置第一个会话为活动会话
+      // 有会话但没有活动会话时，设置第一个会话为活动会话
       setTimeout(() => {
         setActiveSessionId(sessions[0].id)
       }, 0)
     }
   }, [sessions, activeSessionId, setSessions])
 
-  // 获取当前活动会话
+  // 获取当前活动会话和消息列表
   const activeSession = sessions.find(
     (session) => session.id === activeSessionId,
   )
-
-  // 当前活动会话的消息列表
   const currentMessages = activeSession?.messages || []
 
   // 创建新会话
   const createSession = useCallback(
     (initialTitle?: string) => {
-      const newSession: ChatSession = {
-        id: genId(),
-        title: initialTitle || '新对话',
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        messages: [],
+      const newSession = createNewSession()
+
+      // 如果提供了初始标题，则进行替换
+      if (initialTitle) {
+        newSession.title = initialTitle
       }
 
-      // 确保状态更新
+      // 更新会话列表并设置为活动会话
       setSessions((prev) => [...prev, newSession])
       setActiveSessionId(newSession.id)
 
@@ -92,15 +104,14 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
           (session) => session.id !== sessionId,
         )
 
-        // 如果删除的是当前活动会话，切换到第一个会话或创建新会话
+        // 处理活动会话变更
         if (sessionId === activeSessionId) {
           if (newSessions.length > 0) {
+            // 有其他会话时，切换到第一个会话
             setActiveSessionId(newSessions[0].id)
           } else {
-            // 延迟创建新会话，避免级联渲染
-            setTimeout(() => {
-              createSession()
-            }, 0)
+            // 没有会话时，创建新会话
+            setTimeout(() => createSession(), 0)
           }
         }
 
@@ -113,6 +124,9 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
   // 更新会话标题
   const updateSessionTitle = useCallback(
     (sessionId: string, title: string) => {
+      // 只更新非空标题
+      if (!title.trim()) return
+
       setSessions((prev) =>
         prev.map((session) =>
           session.id === sessionId
@@ -140,23 +154,22 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
       setSessions((prev) =>
         prev.map((session) => {
           if (session.id === activeSessionId) {
-            // 根据参数类型获取新的消息数组
+            // 获取新的消息数组
             const messages =
               typeof messagesOrUpdater === 'function'
                 ? messagesOrUpdater(session.messages)
                 : messagesOrUpdater
 
-            // 如果是第一条用户消息，用它来更新会话标题
+            // 如果会话标题为默认值，尝试从第一条用户消息生成标题
             let updatedTitle = session.title
-            if (session.title === '新对话' && messages.length >= 1) {
-              const firstUserMsg = messages.find((msg) => msg.role === 'user')
-              if (firstUserMsg) {
-                updatedTitle =
-                  firstUserMsg.content.slice(0, 30) +
-                  (firstUserMsg.content.length > 30 ? '...' : '')
+            if (session.title === '新对话' && messages.length > 0) {
+              const generatedTitle = generateSessionTitle(messages)
+              if (generatedTitle) {
+                updatedTitle = generatedTitle
               }
             }
 
+            // 返回更新后的会话
             return {
               ...session,
               messages,
