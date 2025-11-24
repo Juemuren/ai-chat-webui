@@ -54,8 +54,6 @@ graph LR
     D --> J[handleChatError]
 ```
 
-#### 核心处理流程
-
 1. **消息发送流程**：
    - 用户在 ChatInput 组件中输入消息并点击发送
    - `useChatSend.send()` 方法被调用
@@ -110,8 +108,6 @@ graph TD
     E[chatAdapter] --> F[toOllamaMessages]
     E --> G[fromOllamaMessage]
 ```
-
-#### 关键技术实现
 
 1. **流式响应处理**：
    - 使用 `fetch API` 的 `ReadableStream` 和 `AsyncGenerator` 实现流式数据处理
@@ -185,8 +181,6 @@ flowchart TD
     A --> G[updateSessionTitle]
     H[useSession] --> A
 ```
-
-#### 核心设计特点
 
 1. **状态管理**：
    - 使用 React Context API 实现全局会话状态管理
